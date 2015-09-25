@@ -1,0 +1,214 @@
+Crime and demographic factors in selected US cities.
+===============
+
+Introduction
+=========
+I've been alsways interested in statistics and sociology of crime. Questions like 'Is there a connection between crime and poverty?', 'Does level of educaiton correlates with crime rate?' or 'Are factors correlated with property and personal crimes different or not?' have been dragging my attention for a long time.
+
+This paper is an attempt to find which demographic factors correlate with level of crime using techniques from Udacity's course 'Exploratory data analysis with R'. I'll try to select demographic factors that might correlate with crime rate and cover the following broad topics:
+
+ * determine which of selected factors correlate with level of crime,
+ * is there different correlation factors between personal and property crimes.
+
+Research dataset.
+-------------
+My starting point was to figure out how to get as granular dataset as possible both for crime and for demographic data. As it turns out, several major cities in US provide a dataset of every reported crime, with crime description and, which is even more important, geographical locations of reported crime. I obtained these datasets for two large US cities: Los Angeles and Chicago for the year 2013.
+
+Primary source of varous demographic data for US is US census bureau and its site. It provides demographic data at various geographic levels. The smallest geographical unit for which the bureau publishes sample data is [census block group](https://en.wikipedia.org/wiki/Census_block_group). Additionally, bureau provides geographical shapes of these block groups. This allows us to determine block group of every reported crime, since our initial crime dataset contains information about geographical coordinates of the crime.
+
+There is plenty of research around factors influencing crime. Most of the research describe following demographic factors, cite these demographic parameters as the ones that have the most incluence to crime rate:
+
+ * Level of urbanization
+ * Median income
+ * Unemployment
+ * Education level
+ * Concentraiton of youth
+ * Family condition, especially in respect to divorse, family composition etc.
+
+Within the current paper I decided to focus on following variables:
+
+ * Population density,
+ * Median personal income,
+ * Share of unemployed,
+ * Share of those with educaiton level of at elast one year of college or higher.
+
+All this data is available for download on census block group level through census.gov.
+
+Constructing research dataset.
+-----------------
+Creating clean dataset for this paper was a long and time consuming task. It contained multiple steps, involving multiple technologies, like Excel, GIS, R and SQL. I used SQL for loading and merging data, and geographical extentions for Postgres database named PostGIS for geographical calculations. I also used Excel and R for cleaning up downloaded datasets. The process is described in detail in a separate document.
+
+As part of cleaning up dataset, I had to assign manually if the crime was personal or property crime. Original crime datasets contained a column "crime type", however these were more granular crime types. More over, each police departments has its own set of crime types. In my case this column contained rather obvious types, such as 'Arson', 'Assault', 'Homicide' or 'Theft', as well as more obscure or granular types, such as 'OTHER MISCELLANEOUS CRIME' or 'THEFT, COIN MACHINE. I constructed a separate dataset with matches between reported crime type form dataset, and crime types used in this research: 'personal', 'property', 'other'. 
+
+At the end I constructed two datasets about crime and demographic statistics in Los Angeles and Chicago:
+
+1. crime_reports.csv, containing crime reports for 2013 in Los Angeles and Chicago. Its columns are: 
+    1. crime, crime type as found in report. 
+    2. lat and lon - latitude and longitue associated with the crime report
+    3. reported_at. Date and hour when crime was reported to happen.
+    4. city. Los Angeles or Chicago
+    5. type. Personal, property or other.
+
+2. crime_demo_data.csv, amount of personal, property and other crime by census block group, with demographic variables. FIn addition to census block identificator and crime levels, following demographic variables are present:
+    1. population density, persons per sqkare kilometer;
+    2. Median personal income, US DOllars;
+    3. Share of unemployed
+    4. Share of people with at least a year of college education.
+    
+Both are available in folder `clean_dataset`.
+
+1. ANALYSIS
+========
+In this section I will look at two datasets in more detail, will try to provide a deeper overview of crime situation in both cities, and try to find correlations between crime level and demographic parameters.
+
+Let's start with exploring basic descriptive statistics of crime reports dataset.
+```{r, echo=FALSE}
+library('ggplot2')
+library('scales')
+library(reshape)
+library('ggmap')
+library('grid')
+source('multiplot.R')
+crime_reports = read.csv('clean_datasets/crime_reports.csv')
+crime_reports$type = factor(crime_reports$type, levels=c('personal', 'property', 'other'))
+crime_reports_chicago = crime_reports[crime_reports$city == 'Chicago',]
+crime_reports_la = crime_reports[crime_reports$city == 'Los Angeles',]
+chicago_crimes_total = table(crime_reports$city)['Chicago']
+la_crimes_total = table(crime_reports$city)['Los Angeles']
+brkdn = table(crime_reports$city, crime_reports$type)
+ds = melt(brkdn/apply(brkdn, 1, sum))
+```
+
+Descriptive analysis of crime dataset
+-------------------
+There are `r nrow(crime_reports)` crime reports in our dataset, `r format(chicago_crimes_total, big.mark=",")` or `r percent(chicago_crimes_total/nrow(crime_reports))` of our dataset are reported in Chicago and `r format(la_crimes_total, big.mark=",")` or `r percent(la_crimes_total/nrow(crime_reports))` were reported in Los Angeles. Crime rates (number of reproted crimes per 100,000)  are given in table below:
+
+```{r, results='asis', echo=FALSE}
+summs = c(sum(crime_reports_chicago$type=='personal')/2706101,
+          sum(crime_reports_chicago$type=='property')/2706101, 
+          nrow(crime_reports_chicago)/2706101, 
+          sum(crime_reports_la$type=='personal')/3792621,
+          sum(crime_reports_la$type=='property')/3792621, 
+          nrow(crime_reports_la)/3792621)
+table_data=matrix(100000 * summs, ncol=3, byrow = TRUE, dimnames=list(c('Chicago', 'Los Angeles'), c('personal', 'property', 'total')))
+
+knitr::kable(format(table_data,big.mark=',', digits=2 ), align='r')
+```
+
+And this is the breakdown between crime types and cities in absolute numbers:
+
+```{r, results='asis', echo=FALSE}
+knitr::kable(format(brkdn, big.mark=','), align='r')
+```
+
+Figures above show us that there is significantly more crime in Chicago than in Los Angeles. Difference in crime rate is especially high for personal crimes: Chicago's . Also crime rate between  
+
+As we can see, most of the crimes were property crimes in both cities. One thing that stands out it a large share of crimes that I grouped as 'other' in Chicago. This can suggest inconsistencies with crime reporting in Chicago.
+
+Let's look at the time when crimes are happening. Hourly patterns by crime type and city are plotted below.
+
+```{r echo=FALSE}
+crime_reports_chicago$reported_at = strptime(crime_reports_chicago$reported_at, format='%Y-%m-%d %H:%M:%S', tz='America/Chicago')
+crime_reports_la$reported_at = strptime(crime_reports_la$reported_at, format='%Y-%m-%d %H:%M:%S', tz='America/Chicago')
+crime_reports = rbind(crime_reports_la, crime_reports_chicago)
+
+crime_reports$by_weekday = weekdays(crime_reports$reported_at)
+crime_reports$by_hour = crime_reports$reported_at[['hour']]
+
+brkdn = table(crime_reports$by_hour, crime_reports$city, crime_reports$type)
+brkdn[,,'other'] = brkdn[,,'other']/c(304372, 231540)
+brkdn[,,'personal'] = brkdn[,,'personal']/c(304372, 231540)
+brkdn[,,'property'] = brkdn[,,'property']/c(304372, 231540)
+
+brkdn.melt = melt(brkdn)
+
+p = ggplot(brkdn.melt, aes(x=Var.1, y=value)) + 
+  geom_line() + 
+  facet_grid(Var.2 ~ Var.3) + 
+  theme_bw() +
+  ggtitle('Reported crimes by hour in Los Angeles and Chicago, 2013') +
+  scale_y_continuous(name='Share of reported crimes', labels = percent) +
+  scale_x_continuous(name='Hour')
+
+print(p)
+```
+Some patterns are hte same across the cities and crime types. For example, lowest crime rate is during early morning hours between 4 and 6 AM. Also it is surprizing that crime reports tend to be reported more at odd hours, as we see from jagged lines in all the facets.
+
+However crime in Chicago and Los Angeles are different in several ways. As we saw in table above, personal crimes in Chicago have larger share than in Los Angeles. Another difference is that property crimes tend to be happening at different times in these two cities: maximum share of reported property crimes in Chicago is at 9AM, while in Los Angeles maximum is at noon.
+
+Let's look at weekday patterns.
+
+```{r echo=FALSE}
+brkdn = table(crime_reports$by_weekday, crime_reports$city, crime_reports$type)
+brkdn[,,'other'] = brkdn[,,'other']/c(304372, 231540)
+brkdn[,,'personal'] = brkdn[,,'personal']/c(304372, 231540)
+brkdn[,,'property'] = brkdn[,,'property']/c(304372, 231540)
+
+brkdn.melt = melt(brkdn)
+brkdn.melt$Var.1 = factor(brkdn.melt$Var.1, levels = rev(c('Monday', "Tuesday", 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')))
+
+
+p = ggplot(brkdn.melt, aes(x=Var.1, y=value)) + 
+  geom_bar(stat='identity') + 
+  coord_flip() +
+  facet_grid(Var.2 ~ Var.3) + 
+  theme_bw() +
+  ggtitle('Reported crimes by weekday in Los Angeles and Chicago, 2013') +
+  scale_y_continuous(name='Share of reported crimes', labels = percent) +
+  scale_x_discrete(name='Day of week')
+
+print(p)
+
+```
+
+Here we see slightly different crime patterns between two cities. Most crimes in Chicago are reported at the begininng of the week, while in Los Angeles they tend to be happening in the middle of the week.
+
+Finally let's plot crime reports on map of respected cities.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+la_data_personal = crime_reports[crime_reports$city=='Los Angeles' & crime_reports$type=='personal',]
+la_data_property = crime_reports[crime_reports$city=='Los Angeles' & crime_reports$type=='property',]
+
+ch_data_personal = crime_reports[crime_reports$city=='Chicago' & crime_reports$type=='personal',]
+ch_data_property = crime_reports[crime_reports$city=='Chicago' & crime_reports$type=='property',]
+
+watercolor_la <- get_map(location=c(lon=-118.3994, lat=34.0731), 
+                      source = "stamen",
+                      maptype = "toner-lite",
+                      zoom=11)
+watercolor_ch <- get_map(location=c(lon=-87.6847, lat=41.8369), 
+                         source = "stamen",
+                         maptype = "toner-lite",
+                         zoom=11)
+
+plot_map = function(base_map, plot_data, title, high_color) {
+  m = ggmap(base_map)  +
+    stat_density2d(data = plot_data, aes(x=lon, y=lat, fill=..level..), geom="polygon") +
+    scale_fill_gradient(low = "#e8e8e8", high = high_color) +
+    ggtitle(title) +
+    theme(
+      axis.line = element_blank(),
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.border = element_blank(),
+      panel.background = element_blank(),
+      legend.position="none",
+      plot.margin=unit(c(0.1,0.1,0,0), "cm")
+    )
+  return(m)   
+}
+
+multiplot(plot_map(watercolor_la, la_data_personal, 'Personal crimes in LA, 2013', "brown"),
+          plot_map(watercolor_la, la_data_property, 'Property crimes in LA, 2013', "blue"),
+          plot_map(watercolor_ch, ch_data_personal, 'Personal crimes in Chicago, 2013', "brown"),
+          plot_map(watercolor_ch, ch_data_property, 'Property crimes in Chicago, 2013', "blue"),
+          layout=matrix(c(1,2,3,4), nrow=2, byrow=TRUE))
+
+```
+
+This is the most interesting plot so far. Both personal and property crimes in Los Angeles are concentrated in a single are around Skid Row and Downton Los Angeles. In Chicago though try types of crime are concentrated in completely different areas. Property crimes are clustered aroudn Chicago downtown: Near North Side, Chicago Loop and River North. Personal crimes are concentrated heavily around western areas of Chicago: North and South Lawndale, Near West Side.

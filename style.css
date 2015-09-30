@@ -1,0 +1,14 @@
+body{
+counter-reset:figure;
+}
+
+.caption::before{
+counter-increment: figure;
+content: "Figure " counter(figure) ": ";
+}
+
+.caption{
+    margin-top: 0.1em;
+    padding-top: 0.1em;
+    font-weight: bold;
+}

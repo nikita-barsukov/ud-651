@@ -1,5 +1,5 @@
 body{
-counter-reset:figure;
+counter-reset:figure table;
 }
 
 .caption::before{
@@ -7,8 +7,17 @@ counter-increment: figure;
 content: "Figure " counter(figure) ": ";
 }
 
-.caption{
+.caption, caption{
     margin-top: 0.1em;
     padding-top: 0.1em;
     font-weight: bold;
+}
+
+table caption::before{
+counter-increment: table;
+content: "Table " counter(figure) ": ";  
+}
+
+pre{
+  display:none;
 }

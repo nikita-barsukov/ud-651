@@ -9,7 +9,7 @@ https://data.lacity.org/A-Safe-City/LAPD-Crime-and-Collision-Raw-Data-for-2013/i
 
 My next step was to obtain geographical shapes of census blocks, to be able to attribute census block based on geographical coordinates in crime dataset. Shapefiles are available for download at [Census government portal](https://www.census.gov/cgi-bin/geo/shapefiles2013/layers.cgi).
 
-Data of various social parameters: educational leel, employment status, population and median income was downloaded from American county survey, available through Census.gov website. Download process is rather cumbersome, it is explained in detail on this forum: http://gis.stackexchange.com/questions/9380/where-to-get-2010-census-block-data
+Data of various social parameters: educational leel, employment status, population and median income was downloaded from American county survey website.
 
 **Cleaning up the data**
 

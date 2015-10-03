@@ -1,7 +1,10 @@
 ---
 title: "Crime and demographic factors in Los Angeles and Chicago"
+author: 'Nikita Barsukov' 
+date: "October 3rd, 2015"
 output:
   html_document:
+    theme: readable
     toc: true
     toc_depth: 2
     fig_caption: true 
@@ -44,7 +47,7 @@ All this data is available for download on census block group level through cens
 
 Constructing research dataset.
 -----------------
-Creating clean dataset for this paper was a long and time consuming task. It contained multiple steps, involving multiple technologies, like Excel, GIS, R and SQL. I used SQL for loading and merging data, and geographical extentions for Postgres database named PostGIS for geographical calculations. I also used Excel and R for cleaning up downloaded datasets. The process is described in detail in a [separate document](https://github.com/nikita-barsukov/ud-651/blob/master/drafts_and_chunks/dataset_construction.md).
+Creating clean dataset for this paper was a long and time consuming task. It contained multiple steps, involving multiple technologies, like Excel, GIS, R and SQL. I used SQL for loading and merging data, and geographical extentions for Postgres database named PostGIS for geographical calculations. I also used Excel and R for cleaning up downloaded datasets. The process is described in detail in a [separate document](https://github.com/nikita-barsukov/ud-651/blob/master/supporting_texts/dataset_construction.md).
 
 As part of cleaning up dataset, I had to assign manually if the crime was personal or property crime. Original crime datasets contained a column "crime type", however these were more granular crime types. More over, each police departments has its own set of crime types. In my case this column contained rather obvious types, such as 'Arson', 'Assault', 'Homicide' or 'Theft', as well as more obscure or granular types, such as *'OTHER MISCELLANEOUS CRIME'* or *'THEFT, COIN MACHINE'*. I constructed a [separate dataset](https://github.com/nikita-barsukov/ud-651/blob/master/clean_datasets/crime_types.csv) that matches between reported crime type form dataset, and crime types used in this research: 'personal', 'property', 'other'. 
 
@@ -68,6 +71,7 @@ Analysis and exploration of data
 In this section I will look at two datasets in more detail, and will try to provide a deeper overview of crime situation in both cities. Let's start with exploring basic descriptive statistics of crime reports dataset.
 ```{r echo=FALSE}
 library('scales')
+options(scipen = 9999999)
 
 crime_reports = read.csv('clean_datasets/crime_reports.csv')
 crime_reports$type = factor(crime_reports$type, levels=c('personal', 'property', 'other'))
@@ -120,9 +124,8 @@ source('R/heatmaps.R')
 
 This is the most interesting plot so far. Both personal and property crimes in Los Angeles are concentrated in a single area around Skid Row and Downton Los Angeles. In Chicago though both types of crime are concentrated in completely different areas. Property crimes are clustered around Chicago city center: Near North Side, Chicago Loop and River North. Personal crimes are concentrated heavily around western areas of Chicago: North and South Lawndale, Near West Side.
 
-Visualizing correlation
--------------------
-
+Final plots and summary
+===============
 Let's start with plotting our demographic variables on a city map, to find visual clues about connection between demography and crime level. This is map of Los Angeles with four demographic variables on it:
 
 ``````{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Demography maps of Los Angeles'}
@@ -136,9 +139,6 @@ source('R/correlation_maps_ch.R')
 ```
 
 There is some pattern between median income and education level from one side and crime level on another side. In both cities median income is lower in the areas where personal crime rate is higher, and education level is also lower in the areas with high level of personal crime. However there is no clearly visible pattern for density and unemployment level.
-
-Final plots and summary
-===============
 
 Let's move to our main research question, namely finding of there is any correlation between four selected demographic variables.
 
@@ -198,5 +198,5 @@ Further research on using datasets used in this paper could include:
 
  * Cluster analysis of crime reports. We could explore various clustering approaches to find out areas of crime concentration.
  * Include more demographic variables, ex. family size, number of children in a family etc.
- * We could also include other public datasets, ex. compare distributions of McDonalds's, Starbucks, Seven-11 restaurants, and locations of crime reports.
+ * We could also use locations of other places, ex. compare distributions of McDonalds's, Starbucks, Seven-11 restaurants, and locations of crime reports.
  

@@ -1,5 +1,5 @@
 body{
-counter-reset:figure 1 tbl 1;
+counter-reset:figure tbl;
 }
 
 .caption::before{

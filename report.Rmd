@@ -1,10 +1,11 @@
 ---
-title: "Crime and demographic factors in selected US cities."
+title: "Crime and demographic factors in Los Angeles and Chicago"
 output:
   html_document:
     toc: true
     toc_depth: 2
     fig_caption: true 
+    fig_retina: 3
     css: style.css
 ---
 
@@ -21,9 +22,9 @@ Research question
 -------------
 My starting point was to figure out how to get as granular dataset as possible both for crime and for demographic data. As it turns out, several major cities in US provide a dataset of every reported crime, with crime description and, which is even more important, geographical locations of reported crime. I obtained these datasets for two large US cities: Los Angeles and Chicago for the year 2013.
 
-Primary source of varous demographic data for US is US census bureau and its site. It provides demographic data at various geographic levels. The smallest geographical unit for which the bureau publishes sample data is [census block group](https://en.wikipedia.org/wiki/Census_block_group). Additionally, bureau provides geographical shapes of these block groups. This allows us to determine block group of every reported crime, since our initial crime dataset contains information about geographical coordinates of the crime.
+Primary source of varous demographic data for the United States is [The United States Census Bureau](http://census.gov/). It provides demographic data at various geographic levels through its site. The smallest geographical unit for which the bureau publishes sample data is [census block group](https://en.wikipedia.org/wiki/Census_block_group). Additionally, bureau provides geographical shapes of these block groups. This allows us to determine block group of every reported crime, since our initial crime dataset contains information about geographical coordinates of the crime.
 
-There is plenty of research around factors influencing crime. Most of the research describe following demographic factors, cite these demographic parameters as the ones that have the most incluence to crime rate:
+Next step was to determine which demographic factors I should select for this paper. There is plenty of research around factors influencing crime. Most of the research describing factors influencing crime, cite these demographic parameters as the ones that have the most incluence to crime rate:
 
  * Level of urbanization
  * Median income
@@ -37,38 +38,34 @@ Within the current paper I decided to focus on following variables:
  * Population density,
  * Median personal income,
  * Share of unemployed,
- * Share of those with educaiton level of at elast one year of college or higher.
+ * Share of those with educaiton level of at least one year of college or higher.
 
 All this data is available for download on census block group level through census.gov.
 
 Constructing research dataset.
 -----------------
-Creating clean dataset for this paper was a long and time consuming task. It contained multiple steps, involving multiple technologies, like Excel, GIS, R and SQL. I used SQL for loading and merging data, and geographical extentions for Postgres database named PostGIS for geographical calculations. I also used Excel and R for cleaning up downloaded datasets. The process is described in detail in a separate document.
+Creating clean dataset for this paper was a long and time consuming task. It contained multiple steps, involving multiple technologies, like Excel, GIS, R and SQL. I used SQL for loading and merging data, and geographical extentions for Postgres database named PostGIS for geographical calculations. I also used Excel and R for cleaning up downloaded datasets. The process is described in detail in a [separate document](https://github.com/nikita-barsukov/ud-651/blob/master/drafts_and_chunks/dataset_construction.md).
 
-As part of cleaning up dataset, I had to assign manually if the crime was personal or property crime. Original crime datasets contained a column "crime type", however these were more granular crime types. More over, each police departments has its own set of crime types. In my case this column contained rather obvious types, such as 'Arson', 'Assault', 'Homicide' or 'Theft', as well as more obscure or granular types, such as 'OTHER MISCELLANEOUS CRIME' or 'THEFT, COIN MACHINE. I constructed a separate dataset with matches between reported crime type form dataset, and crime types used in this research: 'personal', 'property', 'other'. 
+As part of cleaning up dataset, I had to assign manually if the crime was personal or property crime. Original crime datasets contained a column "crime type", however these were more granular crime types. More over, each police departments has its own set of crime types. In my case this column contained rather obvious types, such as 'Arson', 'Assault', 'Homicide' or 'Theft', as well as more obscure or granular types, such as *'OTHER MISCELLANEOUS CRIME'* or *'THEFT, COIN MACHINE'*. I constructed a [separate dataset](https://github.com/nikita-barsukov/ud-651/blob/master/clean_datasets/crime_types.csv) that matches between reported crime type form dataset, and crime types used in this research: 'personal', 'property', 'other'. 
 
 At the end I constructed two datasets about crime and demographic statistics in Los Angeles and Chicago:
 
-1. crime_reports.csv, containing crime reports for 2013 in Los Angeles and Chicago. Its columns are: 
+1. [crime_reports.csv](https://github.com/nikita-barsukov/ud-651/blob/master/clean_datasets/crime_reports.csv), containing crime reports for 2013 in Los Angeles and Chicago. Its columns are: 
     1. crime, crime type as found in report. 
     2. lat and lon - latitude and longitue associated with the crime report
     3. reported_at. Date and hour when crime was reported to happen.
     4. city. Los Angeles or Chicago
     5. type. Personal, property or other.
 
-2. crime_demo_data.csv, amount of personal, property and other crime by census block group, with demographic variables. FIn addition to census block identificator and crime levels, following demographic variables are present:
-    1. population density, persons per sqkare kilometer;
-    2. Median personal income, US DOllars;
+2. [crime_demo_data.csv](https://github.com/nikita-barsukov/ud-651/blob/master/clean_datasets/crime_demo_data.csv), amount of personal, property and other crime by census block group, with demographic variables. In addition to census block identificator and crime levels, following demographic variables are present:
+    1. Population density, persons per sqkare kilometer;
+    2. Median personal income, US Dollars;
     3. Share of unemployed
     4. Share of people with at least a year of college education.
     
-Both are available in folder `clean_dataset`.
-
-1. ANALYSIS
-========
-In this section I will look at two datasets in more detail, will try to provide a deeper overview of crime situation in both cities, and try to find correlations between crime level and demographic parameters.
-
-Let's start with exploring basic descriptive statistics of crime reports dataset.
+Analysis and exploration of data
+=====================
+In this section I will look at two datasets in more detail, and will try to provide a deeper overview of crime situation in both cities. Let's start with exploring basic descriptive statistics of crime reports dataset.
 ```{r echo=FALSE}
 library('scales')
 
@@ -86,18 +83,16 @@ There are `r nrow(crime_reports)` crime reports in our dataset, `r format(chicag
 
 ```{r, results='asis', echo=FALSE}
 source('R/basic_breakdowns.R')
-knitr::kable(format(table_data,big.mark=',', digits=2 ), align='r', caption='Reported crime in Chicago and Los Angeles, 2013')
+knitr::kable(format(table_data,big.mark=',', digits=2 ), align='r', caption='Crime rate in Chicago and Los Angeles, 2013')
 ```
 
 And this is the breakdown between crime types and cities in absolute numbers:
 
 ```{r, results='asis', echo=FALSE}
-knitr::kable(format(brkdn, big.mark=','), align='r', caption='Crime rate in Chicago and Los Angeles, 2013')
+knitr::kable(format(brkdn, big.mark=','), align='r', caption='Reported crime in Chicago and Los Angeles, 2013')
 ```
 
-As we can see, most of the crimes were property crimes in both cities. One thing that stands out it a large share of crimes that I grouped as 'other' in Chicago. This can suggest inconsistencies with crime reporting in Chicago.
-
-Figures above show us that there is significantly more crime in Chicago than in Los Angeles. Difference in crime rate is especially high for personal crimes: Chicago's rate of personal crimes is around 60% higher than Los Angeles'.
+Chicago has more crime reported in 2013 than Los Angeles, both in absolute and expecially in relative numbers. Difference in crime rate is especially high for personal crimes: Chicago's rate of personal crimes is around 60% higher than Los Angeles'. Most of the crimes were property crimes in both cities.
 
 Let's look at the time when crimes are happening. Hourly patterns by crime type and city are plotted below.
 
@@ -123,16 +118,12 @@ Finally let's plot crime reports on map of respected cities.
 source('R/heatmaps.R')
 ```
 
-This is the most interesting plot so far. Both personal and property crimes in Los Angeles are concentrated in a single are around Skid Row and Downton Los Angeles. In Chicago though both types of crime are concentrated in completely different areas. Property crimes are clustered around Chicago downtown: Near North Side, Chicago Loop and River North. Personal crimes are concentrated heavily around western areas of Chicago: North and South Lawndale, Near West Side.
+This is the most interesting plot so far. Both personal and property crimes in Los Angeles are concentrated in a single area around Skid Row and Downton Los Angeles. In Chicago though both types of crime are concentrated in completely different areas. Property crimes are clustered around Chicago city center: Near North Side, Chicago Loop and River North. Personal crimes are concentrated heavily around western areas of Chicago: North and South Lawndale, Near West Side.
 
-Let's move to our main research question, namely finding of there is any correlation between four selected demographic variables.
-
-Visualizing connection between demographic parameters and crime level
+Visualizing correlation
 -------------------
 
-Let's start with plotting our demographic variables on a city map, to find visual clues about connection between demography and crime level.
-
-This is map of Los Angeles with four demographic variables on it:
+Let's start with plotting our demographic variables on a city map, to find visual clues about connection between demography and crime level. This is map of Los Angeles with four demographic variables on it:
 
 ``````{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Demography maps of Los Angeles'}
 source('R/correlation_maps_la.R')
@@ -144,17 +135,20 @@ Same variables for Chicago look like this:
 source('R/correlation_maps_ch.R')
 ```
 
-As we can see there is some pattern between median income and education level from one side and crime level on another side. In both cities median income is lower in the areas where personal crime rate is higher, and education level is also lower in the areas with high level of personal crime.
+There is some pattern between median income and education level from one side and crime level on another side. In both cities median income is lower in the areas where personal crime rate is higher, and education level is also lower in the areas with high level of personal crime. However there is no clearly visible pattern for density and unemployment level.
 
-However there is no clearly visible pattern for density and unemployment level.
+Final plots and summary
+===============
 
-Let's look at scatteplots of number of various types of crime and demograpfic parameters by block group.
+Let's move to our main research question, namely finding of there is any correlation between four selected demographic variables.
+
+Scatteplots of number of various types of crime and demograpfic parameters by block group are plotted below:
 
 ``````{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Crime reports and demographic variables'}
 source('R/facet_scatterplot.R')
 ```
 
-Overall the correlation between our demograpfic parameters nd crime reports looks rather weak. Correlation between education level and amount of reported crime looks weakest of all, while median income and unemployment level correlate visibly better.
+Overall the correlation between our demographic parameters and crime reports looks rather weak. Correlation between education level and amount of reported crime looks weakest of all, while median income and unemployment level correlate visibly better.
 
 Let's look at correlation matrix: how number of crime reports by block group correlate with our four demographic parameters.
 
@@ -172,17 +166,37 @@ The table above corroborates with our previous visualizations: indeed all of the
 ````{r echo=FALSE}
 source('R/correlation_matricies.R')
 
-knitr::kable(format(mtrx_la,big.mark=',', digits=2 ), 
+knitr::kable(format(mtrx_la,big.mark=',', digits=2), 
              align='r', 
              caption='Correlations between crime reports and demography, Los Angeles')
-knitr::kable(format(mtrx_ch,big.mark=',', digits=2 ), 
+knitr::kable(format(mtrx_ch,big.mark=',', digits=2), 
              align='r',
              caption='Correlations between crime reports and demography, Chicago')
 ```
 
 And again, we see that correlation between our four demographic variables and number of reported crimes in both cities is weak. Chicago shows somewhat higher correlation coefficient of two cities, but still they are too close to zero to be significant.
 
-Final plots and summary
-===============
+Reflection
+============
+After all my research failed to show significant correlation between level of reported crime in Chicago and Los Angeles, and either of selected four demographic characteristics: 
 
+While we clearly see that in both cities crimes are heavily concentrated in certain city areas, correlation coefficient between number of reported crimes and demographic characteristics on census block level was too close to zero.
 
+So what could go wrong in my analysis? What could be the reasons why I failed to uncover strong correlations between median income, population density, unemployment and education level, and crime rate? After all these four parameters are associated with crime rate extremely often in relevant literature.
+
+First thing that could be wrong is the selected level of granularity of my geographical data. Census blocks, which are the lowest geographical level for which census fata is provided publicly, might be too small for the broad analysis attempted in this paper. This is especially visible on my plots of density level across census blocks: they look to be sitributed randomly. Plotting same data on larged geographical units might give us a different picture. 
+
+A lot of effort was spent on normalizing and merging raw crime datasets. One of the tasks included normalizing crime types, making them uniform across all four datasets. I could make mistakes in attributing crime type reorted in original dataset to crime type used in this paper.
+
+Besides above problems, there are also other broader issues with taken approach. For example, it does not contain any temporal aspect. Dataset covers only year 2013. This would be crucial had I attempted to perform cause-and-effect analysis.
+
+However despite of my failure to find some support to my research question, plenty of positive things can be found in this grading paper.
+
+For example, I showed that there is a lot of potential value in combining publicly available datasets from different sources. Plenty of demographical data is available for various geographical blocks on several levels from American County Survey and census. 
+
+Further research on using datasets used in this paper could include: 
+
+ * Cluster analysis of crime reports. We could explore various clustering approaches to find out areas of crime concentration.
+ * Include more demographic variables, ex. family size, number of children in a family etc.
+ * We could also include other public datasets, ex. compare distributions of McDonalds's, Starbucks, Seven-11 restaurants, and locations of crime reports.
+ 

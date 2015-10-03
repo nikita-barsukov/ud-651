@@ -178,25 +178,23 @@ And again, we see that correlation between our four demographic variables and nu
 
 Reflection
 ============
-After all my research failed to show significant correlation between level of reported crime in Chicago and Los Angeles, and either of selected four demographic characteristics: 
+My research failed to show significant correlation between level of reported crime in Chicago and Los Angeles, and either of selected four demographic characteristics. 
 
-While we clearly see that in both cities crimes are heavily concentrated in certain city areas, correlation coefficient between number of reported crimes and demographic characteristics on census block level was too close to zero.
+While we clearly see that in both cities crimes are heavily concentrated in certain city areas, correlation coefficient between number of reported crimes and demographic characteristics on census block level was insignificant.
 
 So what could go wrong in my analysis? What could be the reasons why I failed to uncover strong correlations between median income, population density, unemployment and education level, and crime rate? After all these four parameters are associated with crime rate extremely often in relevant literature.
 
-First thing that could be wrong is the selected level of granularity of my geographical data. Census blocks, which are the lowest geographical level for which census fata is provided publicly, might be too small for the broad analysis attempted in this paper. This is especially visible on my plots of density level across census blocks: they look to be sitributed randomly. Plotting same data on larged geographical units might give us a different picture. 
+First thing that could be wrong was selected level of granularity of my geographical data. Census blocks, which are the lowest geographical level for which census data is provided publicly, might be too small for the broad analysis attempted in this paper. Plotting same data on larger geographical units might give us a different picture. 
 
-A lot of effort was spent on normalizing and merging raw crime datasets. One of the tasks included normalizing crime types, making them uniform across all four datasets. I could make mistakes in attributing crime type reorted in original dataset to crime type used in this paper.
+A lot of effort was spent on normalizing and merging raw crime datasets. One of the tasks included normalizing crime types, making their labels uniform across all two cities. I could make mistakes in attributing crime type reorted in original dataset to crime type used in this paper.
 
 Besides above problems, there are also other broader issues with taken approach. For example, it does not contain any temporal aspect. Dataset covers only year 2013. This would be crucial had I attempted to perform cause-and-effect analysis.
 
-However despite of my failure to find some support to my research question, plenty of positive things can be found in this grading paper.
-
-For example, I showed that there is a lot of potential value in combining publicly available datasets from different sources. Plenty of demographical data is available for various geographical blocks on several levels from American County Survey and census. 
+However despite of my failure to find some support to my research question, plenty of positive things can be found in this grading paper. For example, I showed that there is a lot of potential value in combining publicly available datasets from different sources. Plenty of demographical data is available for various geographical blocks on several levels from American County Survey and census. 
 
 Further research on using datasets used in this paper could include: 
 
  * Cluster analysis of crime reports. We could explore various clustering approaches to find out areas of crime concentration.
  * Include more demographic variables, ex. family size, number of children in a family etc.
- * We could also use locations of other places, ex. compare distributions of McDonalds's, Starbucks, Seven-11 restaurants, and locations of crime reports.
+ * We could also use locations of other places, ex. compare distributions of McDonalds's, Starbucks, 7-Eleven restaurants, and locations of crime reports.
  

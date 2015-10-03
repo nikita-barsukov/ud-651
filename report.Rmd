@@ -179,3 +179,10 @@ knitr::kable(format(mtrx_ch,big.mark=',', digits=2 ),
              align='r',
              caption='Correlations between crime reports and demography, Chicago')
 ```
+
+And again, we see that correlation between our four demographic variables and number of reported crimes in both cities is weak. Chicago shows somewhat higher correlation coefficient of two cities, but still they are too close to zero to be significant.
+
+Final plots and summary
+===============
+
+

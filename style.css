@@ -1,5 +1,5 @@
 body{
-counter-reset:figure table;
+counter-reset:figure 1 tbl 1;
 }
 
 .caption::before{
@@ -13,9 +13,14 @@ content: "Figure " counter(figure) ": ";
     font-weight: bold;
 }
 
+table > caption {
+  font-weight: bold;
+  color: black;
+}
+
 table caption::before{
-counter-increment: table;
-content: "Table " counter(figure) ": ";  
+counter-increment: tbl;
+content: "Table " counter(tbl) ": ";  
 }
 
 pre{

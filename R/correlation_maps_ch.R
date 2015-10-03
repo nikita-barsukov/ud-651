@@ -1,6 +1,6 @@
 library('rgdal')
-require(maptools)
-require(ggplot2)
+require("maptools")
+require("ggplot2")
 library('ggmap')
 library('grid')
 source('R/multiplot.R')

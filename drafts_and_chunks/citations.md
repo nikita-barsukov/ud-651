@@ -26,5 +26,6 @@ http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_%28ggplot2%29/
 http://stackoverflow.com/questions/21093399/how-to-turn-gpclibpermit-to-true
 http://stackoverflow.com/questions/14622421/how-to-change-legend-title-in-ggplot-density
 http://stackoverflow.com/questions/13469566/polygons-nicely-cropping-ggplot2-ggmap-at-different-zoom-levels
+http://stackoverflow.com/questions/21093399/how-to-turn-gpclibpermit-to-true
 
 

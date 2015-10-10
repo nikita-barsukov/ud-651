@@ -13,6 +13,7 @@ la$Location.1 = as.character(la$Location.1)
 la = la[nchar(la$Location.1) > 0,]
 
 # Proper geo coordiantes for LA
+# since raw dataset has it in format '(lat, lon)'
 la$Location.1 = gsub('[\\(\\)]', '', la$Location.1)
 coords = strsplit(la$Location.1, ',')
 coords = do.call(rbind.data.frame, coords)
@@ -24,8 +25,7 @@ la = cbind(la, coords)
 la$Location.1 = NULL
 rm(coords)
 
-# Fixing timestamps
-#la$TIME.OCC = sprintf("%04d", as.numeric(la$TIME.OCC))
+# Normalizing  timestamps
 la$time = paste(la$DATE.OCC, sprintf("%04d", la$TIME.OCC), sep=' ')
 la$DATE.OCC = NULL
 la$TIME.OCC = NULL

@@ -5,7 +5,8 @@ library('ggmap')
 library('grid')
 source('R/multiplot.R')
 crime_reports = read.csv('clean_datasets/crime_reports.csv')
-crime_reports$type = factor(crime_reports$type, levels=c('personal', 'property', 'other'))
+crime_reports$type = factor(crime_reports$type, 
+                            levels=c('personal', 'property', 'other'))
 crime_reports_chicago = crime_reports[crime_reports$city == 'Chicago',]
 crime_reports_la = crime_reports[crime_reports$city == 'Los Angeles',]
 chicago_crimes_total = table(crime_reports$city)['Chicago']
@@ -22,4 +23,5 @@ sums = c(sum(crime_reports_chicago$type=='personal')/2706101,
 table_data=matrix(100000 * sums, 
                   ncol=3, 
                   byrow = TRUE, 
-                  dimnames=list(c('Chicago', 'Los Angeles'), c('personal', 'property', 'total')))
+                  dimnames=list(c('Chicago', 'Los Angeles'), 
+                                c('personal', 'property', 'total')))

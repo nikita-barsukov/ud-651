@@ -1,19 +1,14 @@
 ---
 title: "Crime and demographic factors in Los Angeles and Chicago"
-author: 'Nikita Barsukov' 
-date: "October 3rd, 2015"
+author: "Nikita Barsukov"
+date: "October 10th, 2015"
 output:
-  pdf_document:
-    toc: true
-    toc_depth: 2
-    fig_caption: true 
-    number_sections: true
   html_document:
     theme: readable
     toc: true
+    number_sections: true
     toc_depth: 2
     fig_caption: true 
-    fig_retina: 3
     css: style.css
 ---
 
@@ -76,8 +71,8 @@ Analysis and exploration of data
 In this section I will look at two datasets in more detail, and will try to provide a deeper overview of crime situation in both cities. Let's start with exploring basic descriptive statistics of crime reports dataset.
 ```{r echo=FALSE}
 library('scales')
-options(scipen = 9999999)
 
+# reading datasets
 crime_reports = read.csv('clean_datasets/crime_reports.csv')
 crime_reports$type = factor(crime_reports$type, levels=c('personal', 'property', 'other'))
 crime_reports_chicago = crime_reports[crime_reports$city == 'Chicago',]
@@ -92,13 +87,17 @@ There are `r nrow(crime_reports)` crime reports in our dataset, `r format(chicag
 
 ```{r, results='asis', echo=FALSE}
 source('R/basic_breakdowns.R')
-knitr::kable(format(table_data,big.mark=',', digits=2 ), align='r', caption='Crime rate in Chicago and Los Angeles, 2013')
+knitr::kable(format(table_data,big.mark=',', digits=2 ), 
+             align='r', 
+             caption='Crime rate in Chicago and Los Angeles, 2013')
 ```
 
 And this is the breakdown between crime types and cities in absolute numbers:
 
 ```{r, results='asis', echo=FALSE}
-knitr::kable(format(brkdn, big.mark=','), align='r', caption='Reported crime in Chicago and Los Angeles, 2013')
+knitr::kable(format(brkdn, big.mark=','), 
+             align='r', 
+             caption='Reported crime in Chicago and Los Angeles, 2013')
 ```
 
 Chicago has more crime reported in 2013 than Los Angeles, both in absolute and expecially in relative numbers. Difference in crime rate is especially high for personal crimes: Chicago's rate of personal crimes is around 60% higher than Los Angeles'. Most of the crimes were property crimes in both cities.
@@ -109,7 +108,7 @@ Let's look at the time when crimes are happening. Hourly patterns by crime type 
 source('R/breakdown_by_hour.R')
 ```
 
-Some patterns are hte same across the cities and crime types. For example, lowest crime rate is during early morning hours between 4 and 6 AM. Also it is surprizing that crime reports tend to be reported more at odd hours, as we see from jagged lines in all the facets.
+Some patterns are the same across the cities and crime types. For example, lowest crime rate is during early morning hours between 4 and 6 AM. Also it is surprizing that crime reports tend to be reported more at odd hours, as we see from jagged lines in all the facets.
 
 However crime in Chicago and Los Angeles are different in several ways. As we saw in table above, personal crimes in Chicago have larger share than in Los Angeles. Another difference is that property crimes tend to be happening at different times in these two cities: maximum share of reported property crimes in Chicago is at 9AM, while in Los Angeles maximum is at noon.
 
@@ -127,7 +126,7 @@ Finally let's plot crime reports on map of respected cities.
 source('R/heatmaps.R')
 ```
 
-This is the most interesting plot so far. Both personal and property crimes in Los Angeles are concentrated in a single area around Skid Row and Downton Los Angeles. In Chicago though both types of crime are concentrated in completely different areas. Property crimes are clustered around Chicago city center: Near North Side, Chicago Loop and River North. Personal crimes are concentrated heavily around western areas of Chicago: North and South Lawndale, Near West Side.
+This is the most interesting plot so far. Both personal and property crimes in Los Angeles are concentrated in a single area around Skid Row and Downton Los Angeles. In Chicago though different types of crime are concentrated in completely different areas. Property crimes are clustered around Chicago city center: Near North Side, Chicago Loop and River North. Personal crimes are concentrated heavily around western areas of Chicago: North and South Lawndale, Near West Side.
 
 Final plots and summary
 ===============
@@ -158,12 +157,17 @@ Overall the correlation between our demographic parameters and crime reports loo
 Let's look at correlation matrix: how number of crime reports by block group correlate with our four demographic parameters.
 
 ````{r echo=FALSE}
-dd = demo_data[c("crime_all","crime_property","crime_personal","density","median_income","unemployed","education")] #variables from previous script
+dd = demo_data[c("crime_all","crime_property","crime_personal","density","median_income","unemployed","education")]
 mtrx = cor(dd)
 mtrx = mtrx[4:7,1:3]
-rownames(mtrx) = c('Population density', 'Median Income','Share of unemployed', 'Share of at least a year in college')
+rownames(mtrx) = c('Population density', 
+                   'Median Income',
+                   'Share of unemployed',
+                   'Share of at least a year in college')
 colnames(mtrx) = c('Total crimes', 'Property crimes', 'Personal crimes')
-knitr::kable(format(mtrx,big.mark=',', digits=2 ), align='r')
+knitr::kable(format(mtrx,big.mark=',', digits=2 ), 
+             align='r', 
+             caption='Correlations between crime reports and demography, entire dataset')
 ```
 
 The table above corroborates with our previous visualizations: indeed all of the demograpfic variables correlate with number of crime reports very weakly. Let's look at correlations at level of cities.

@@ -32,6 +32,8 @@ plot_demo_data = function(base_map,demo_ds, map_ds, variable, title, palette_no)
   return(map)
 }
 
+# Function that plots histogram of a variable 
+#   from our demographic params dataset
 plot_histogram = function(dataset, variable, title, xlim, xaxis_title, perc = FALSE){
   p = ggplot(dataset) + 
     geom_histogram(aes_string(x=variable)) +
@@ -39,14 +41,14 @@ plot_histogram = function(dataset, variable, title, xlim, xaxis_title, perc = FA
     scale_y_continuous(name='Census block groups') +
     theme_bw()
   if(perc) {
-    # covnert x labels to percent when necessary
+    # convert x labels to percent when necessary
     p = p + scale_x_continuous(limits=xlim, name=xaxis_title, labels=percent) 
   } else {
     p = p + scale_x_continuous(limits=xlim, name=xaxis_title)
   }
   return(p)
 }
-
+# Returns correlation matrix between all columns in dataset
 cor_mtrx = function(ds) {
   cor_mat = cor(ds)
   
@@ -57,4 +59,16 @@ cor_mtrx = function(ds) {
   return(cor_mat)
 }
 
-
+# Returns barplot with correlations between demo variables 
+#   and personal / property params
+#   Dataset is molten
+plot_corr_coefficients = function(ds, title){
+  corr_plot = ggplot(data=ds) + 
+    geom_bar(aes(x=X1, y=value, fill=X2),stat="identity", position="dodge") +
+    scale_y_continuous(labels=percent, name='Correlation coefficient') +
+    scale_x_discrete(name='', labels = c('Education', 'Unemployment', 
+                                         'Median income', 'Density')) + 
+    scale_fill_brewer(palette="Set1", name='') +
+    ggtitle(title) +
+    theme_bw()
+}

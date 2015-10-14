@@ -2,6 +2,7 @@ source('R/functions.R')
 # Constructing matrices with correlation coefficients: 
 #   Correlation of every demographic variable with 
 #   every crime type in Chicago and LA 
+library('reshape')
 
 demo_data = read.csv('clean_datasets/crime_demo_data.csv')
 demo_data$city=rep(NA, nrow(demo_data))
@@ -21,3 +22,13 @@ column_names = c('Total crimes', 'Property crimes', 'Personal crimes')
 mtrx = cor_mtrx(demo_data[,columns])
 mtrx_la = cor_mtrx(demo_data[demo_data$city=='la',columns])
 mtrx_ch = cor_mtrx(demo_data[demo_data$city=='chicago',columns])
+
+plot_data = rbind(mtrx_ch, mtrx_la)
+plot_data = melt(plot_data[,c(2,3)])
+
+ch_correlations = plot_corr_coefficients(melt(mtrx_ch[,c(2,3)]),
+                    "Crime rate and demographics,\ncorrelation in Chicago")
+la_correlations = plot_corr_coefficients(melt(mtrx_la[,c(2,3)]),
+                    "Crime rate and demographics,\ncorrelation in Los Angeles")
+total_correlations = plot_corr_coefficients(melt(mtrx[,c(2,3)]),
+                    "Crime rate and demographics,\ncorrelation in both cities")

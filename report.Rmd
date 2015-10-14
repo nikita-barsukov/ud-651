@@ -1,7 +1,7 @@
 ---
 title: "Crime and demographic factors in Los Angeles and Chicago"
 author: "Nikita Barsukov"
-date: "October 13th, 2015"
+date: "October 14th, 2015"
 output:
   html_document:
     theme: readable
@@ -117,7 +117,7 @@ Univariate plots.
 
 Let's look at distribution of our crime rate variables and demographic variables. Outliers were omitted in plots in this section. 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=8, fig.cap='Distribution of crime rate in census block groups'}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Distribution of crime rate in census block groups'}
 source('R/uni_bivariate.R')
 ```
 
@@ -144,13 +144,13 @@ Bivariate plots.
 
 Scatteplots of number of various types of crime and demograpfic parameters by block group are plotted below. As in previosu section, outliers were removed from this plot.
 
-``````{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Crime reports and demographic variables'}
+``````{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Crime rate and demographic variables'}
 source('R/facet_scatterplot.R')
 ```
 
 We can see from scatterplots above that all our demographic variables appear to correlate with crime levels. It is also interesting to note that relation between density and median income from one side and crime levels on another side looks non-linear.
 
-Spatial plots of crime reports
+Spatial plots of crime data
 --------------
 
 Let's put crime reports to map of each city.
@@ -180,14 +180,14 @@ With all these plots in mind, we now have some visual clues suggesting that ther
 Correlation coefficients
 --------------
 
-Let's find quantifiable parameters to visual clues described in sections above and look at correlation matrix: how number of crime reports by block group correlate with our four demographic parameters.
+Let's find quantifiable parameters to visual clues described in sections above and look at correlation matrix: how crime rate in census block groups correlate with our four demographic parameters.
 
 ````{r echo=FALSE}
 source('R/correlation_matricies.R')
 
 knitr::kable(format(mtrx,big.mark=',', digits=2 ), 
              align='r', 
-             caption='Correlations between crime reports and demography, entire dataset')
+             caption='Correlations between crime rate and demography, entire dataset')
 ```
 
 Perhaps a bit surprizingly for us, correlation coefficients are very low. Unemployment level correlates somewhot more significant with all crime types than other demographic variables, however even here they don't exceed 20%. Other correlation coefficients sow even weaker, with numbers around single digit percent they suggest that correlation on overall dataset is almost non-existent.
@@ -199,10 +199,10 @@ However it makes sense to have a look at each individual city to see if things a
 
 knitr::kable(format(mtrx_la,big.mark=',', digits=2), 
              align='r', 
-             caption='Correlations between crime reports and demography, Los Angeles')
+             caption='Correlations between crime rate and demography, Los Angeles')
 knitr::kable(format(mtrx_ch,big.mark=',', digits=2), 
              align='r',
-             caption='Correlations between crime reports and demography, Chicago')
+             caption='Correlations between crime rate and demography, Chicago')
 ```
 
 There are no coefficients higher than 35% on city level as well. In Chicago we see that rate of personal crimes correlate with demographic variables stronger than in Los Angeles, especially the unemployment rate. Also population density correlates somewhat closer with all crime types in Chicago. However even here such numbers do not show us a significant correlation bewteen crime and demographic variables.
@@ -210,15 +210,37 @@ There are no coefficients higher than 35% on city level as well. In Chicago we s
 Final plots and summary
 ===============
 
-My research produced mixed results. Indeed, I could not find a significant correlation between any of demographic varaible used in this reasearch and crime rate of any type. 
+My research produced mixed results. Indeed, I could not find a significant correlation between any of demographic varaible used in this reasearch and crime rate of any type.
 
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Correlation between crime and demografic parameters, Chicago'}
+# plot from R/correlation_matricies.R sourced above
 
+print(ch_correlations)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Correlation between crime and demografic parameters, Los Angeles'}
+# plot from R/correlation_matricies.R sourced above
+
+print(la_correlations)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Correlation between crime and demografic parameters, both cities'}
+# plot from R/correlation_matricies.R sourced above
+
+print(total_correlations)
+```
+
+Another findings that we can see from research above: 
+
+* Personal crimes tend to correlate with demographic parameters stronger than property crimes
+* Chicago and Los Angeles have different patterns in correlations
+* The only demographic parameter that correlates with borh personal and property crime rate in Los Angeles is unemployment level
 
 Reflection
 ============
 My research failed to show decisively a correlation between level of reported crime in Chicago and Los Angeles, and either of selected four demographic characteristics. 
 
-While we clearly see that in both cities crimes are heavily concentrated in certain city areas, correlation coefficient between number of reported crimes and demographic characteristics on census block level was insignificant.
+We clearly see that in both cities crimes are heavily concentrated in certain city areas, which also tend to have distinct demographic qualities. Despite that, correlation coefficient between crime rate per 100,000 inhabitants and demographic characteristics on census block level was insignificant.
 
 So what could go wrong in my analysis? What could be the reasons why I failed to uncover strong correlations between median income, population density, unemployment and education level, and crime rate? After all, these four parameters are associated with crime rate extremely often in relevant literature.
 

@@ -6,13 +6,10 @@ demo_data = read.csv('clean_datasets/crime_demo_data.csv')
 # Removing outliers from dataset
 demo_data[is.na(demo_data)] = 0
 demo_data = demo_data[demo_data$education < 1,]
+demo_data = demo_data[demo_data$density < 100000,]
 demo_data = demo_data[demo_data$unemployed < 0.5,]
-demo_data = demo_data[demo_data$crime_property < 2000,]
-
-# Adding overall number of reported crimes per census block group
-demo_data$crime_all = demo_data$crime_personal + 
-  demo_data$crime_property + 
-  demo_data$crime_other
+demo_data = demo_data[demo_data$crime_personal < 50000,]
+demo_data = demo_data[demo_data$crime_property < 100000,]
 
 # Preparing data for facet plot
 demo_data = demo_data[c("geoid",

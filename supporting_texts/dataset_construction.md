@@ -27,7 +27,7 @@ Next step was to upload clean CSV file with crime reports, shapefiles with block
 Geographical data is uplaoded to table `census_blocks` using this console command: 
 
 ```
-shp2pgsql -g geom -s 4269 -W LATIN1 tl_2013_17_tabblock/tl_2013_17_tabblock.shp tab_block census_blocks | psql -d census_blocks
+shp2pgsql -g geom -s 4269 -W LATIN1 tl_2013_17_bg/tl_2013_17_bg.shp block_group crime | psql -d crime
 
 shp2pgsql -a -g geom -s 4269 -W LATIN1 tl_2013_17_tabblock/tl_2013_17_tabblock.shp tab_block census_blocks | psql -d census_blocks
 ```

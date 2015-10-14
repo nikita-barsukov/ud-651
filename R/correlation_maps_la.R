@@ -10,7 +10,7 @@ source('R/functions.R')
 #  we need to explicitly set data tye to character
 #  otehrwise they would be coersed to numeric
 #  and zeroes would be lost.
-ds_column_classes = c('character', 'character', 'numeric', 'numeric','numeric','numeric', 'numeric', 'numeric', 'numeric')
+ds_column_classes = c('character', 'character', rep('numeric',12))
 demo_data = read.csv('clean_datasets/crime_demo_data.csv', 
                      colClasses = ds_column_classes)
 
@@ -41,12 +41,12 @@ demo_data$edu.brackets = cut(demo_data$education,
                                       '60%-80%',
                                       '80% and up'))
 demo_data$density.brackets = cut(demo_data$density, 
-                                 breaks=c(0,500,1000,1500,2000,Inf), 
-                                 labels=c('Under 500',
-                                          '500-999',
-                                          '1000-1499',
-                                          '1500-1999',
-                                          '2000 and more'))
+                                 breaks=c(0,2500,5000,7500,10000,Inf), 
+                                 labels=c('Under 2500',
+                                          '2500-4999',
+                                          '5000-7499',
+                                          '7500-9999',
+                                          '10000 and more'))
 la_data = demo_data[demo_data$city == 'la',]
 
 # Creating a layer with census block groups
@@ -75,7 +75,9 @@ la_density = plot_demo_data(watercolor_la ,
 la_education = plot_demo_data(watercolor_la ,
                               la_data,merged.points,
                               'edu.brackets',
-                              "Share of people\nwith at least a year in college,\nLos Angeles, 2013",
+                              paste("Share of people",
+                                    "with at least high school diploma,",
+                                    "Chicago, 2013", sep='\n'),
                               3)
 la_unemp = plot_demo_data(watercolor_la,
                           la_data,merged.points,

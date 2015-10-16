@@ -26,8 +26,9 @@ watercolor_ch <- get_map(location=c(lon=-87.6847, lat=41.8369),
 plot_map = function(base_map, plot_data, title, high_color) {
   m = ggmap(base_map)  +
     stat_density2d(data = plot_data, aes(x=lon, y=lat, fill=..level..), 
-                   geom="polygon") +
-    scale_fill_gradient(low = "#e8e8e8", high = high_color) +
+                   geom="polygon",
+                   alpha=0.6) +
+    scale_fill_gradient(low = "#e8e8e8", high = high_color, name='Density') +
     ggtitle(title) +
     theme(
       axis.line = element_blank(),
@@ -40,7 +41,6 @@ plot_map = function(base_map, plot_data, title, high_color) {
       panel.grid.minor = element_blank(),
       panel.border = element_blank(),
       panel.background = element_blank(),
-      legend.position="none",
       plot.margin=unit(c(0.1,0.1,0,0), "cm")
     )
   return(m)   

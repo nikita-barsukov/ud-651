@@ -42,11 +42,11 @@ demo_data$edu.brackets = cut(demo_data$education,
                                       '80% and up'))
 demo_data$density.brackets = cut(demo_data$density, 
                                  breaks=c(0,2500,5000,7500,10000,Inf), 
-                                 labels=c('Under 2500',
-                                          '2500-4999',
-                                          '5000-7499',
-                                          '7500-9999',
-                                          '10000 and more'))
+                                 labels=c('Under 2,500',
+                                          '2,500-4,999',
+                                          '5,000-7,499',
+                                          '7,500-9,999',
+                                          '10,000 and more'))
 la_data = demo_data[demo_data$city == 'la',]
 
 # Creating a layer with census block groups
@@ -77,7 +77,7 @@ la_education = plot_demo_data(watercolor_la ,
                               'edu.brackets',
                               paste("Share of people",
                                     "with at least high school diploma,",
-                                    "Chicago, 2013", sep='\n'),
+                                    "Los Angeles, 2013", sep='\n'),
                               3)
 la_unemp = plot_demo_data(watercolor_la,
                           la_data,merged.points,

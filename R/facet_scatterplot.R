@@ -31,7 +31,8 @@ demo_params = demo_data[c("geoid",
                           "education")]
 crime_params_melt = melt(crime_params, id.vars='geoid')
 demo_params_melt = melt(demo_params, id.vars='geoid')
-plot_data_melt = merge(crime_params_melt, demo_params_melt, by.x='geoid',by.y='geoid')
+plot_data_melt = merge(crime_params_melt, demo_params_melt, 
+                       by.x='geoid',by.y='geoid')
 
 # Renaming factor levels for better labels on plot
 plot_data_melt$variable.x = revalue(plot_data_melt$variable.x, 
@@ -46,9 +47,11 @@ plot_data_melt$variable.y = revalue(plot_data_melt$variable.y,
 
 pl = ggplot(plot_data_melt, aes(x=value.x, y=value.y)) +
   geom_point(size=1, alpha=0.1) +
+  scale_x_continuous(name="Crime rate, reports per 100,000 people") +
+  geom_smooth(method='lm',formula=y~x, se=FALSE) +
   facet_grid(variable.y ~ variable.x, scales="free") +
   theme_bw() +
-  ggtitle('Reported crimes and various demographics\nLA and Chicago, 2013') +
-  theme(axis.title=element_blank(),
+  ggtitle('Crime rate and various demographics\nLA and Chicago, 2013') +
+  theme(axis.title.y=element_blank(),
   plot.margin=unit(c(0.1,0.1,0,0), "cm"))
 print(pl)

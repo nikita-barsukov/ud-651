@@ -1,17 +1,6 @@
----
-title: "Crime and demographic factors in Los Angeles and Chicago"
-author: "Nikita Barsukov"
-date: "October 16th, 2015"
-output:
-  html_document:
-    css: style.css
-    fig_caption: yes
-    keep_md: yes
-    number_sections: yes
-    theme: readable
-    toc: yes
-    toc_depth: 2
----
+# Crime and demographic factors in Los Angeles and Chicago
+Nikita Barsukov  
+October 16th, 2015  
 
 Introduction
 =========
@@ -70,36 +59,25 @@ At the end I constructed two datasets about crime and demographic statistics in 
 Analysis and exploration of data
 =====================
 In this section I will look at two datasets in more detail, and will try to provide a deeper overview of crime situation in both cities. Let's start with exploring basic descriptive statistics of crime reports dataset.
-```{r echo=FALSE}
-library('scales')
 
-# reading datasets
-crime_reports = read.csv('clean_datasets/crime_reports.csv')
-crime_reports$type = factor(crime_reports$type, levels=c('personal', 'property', 'other'))
-crime_reports_chicago = crime_reports[crime_reports$city == 'Chicago',]
-crime_reports_la = crime_reports[crime_reports$city == 'Los Angeles',]
-chicago_crimes_total = table(crime_reports$city)['Chicago']
-la_crimes_total = table(crime_reports$city)['Los Angeles']
-```
 
 Summary of crime dataset
 -------------------
-There are `r format(nrow(crime_reports), big.mark=",")` crime reports in our dataset, `r format(chicago_crimes_total, big.mark=",")` or `r percent(chicago_crimes_total/nrow(crime_reports))` of our dataset are reported in Chicago and `r format(la_crimes_total, big.mark=",")` or `r percent(la_crimes_total/nrow(crime_reports))` were reported in Los Angeles. Crime rates (number of reproted crimes per 100,000)  are given in table below:
+There are 535,912 crime reports in our dataset, 304,372 or 56.8% of our dataset are reported in Chicago and 231,540 or 43.2% were reported in Los Angeles. Crime rates (number of reproted crimes per 100,000)  are given in table below:
 
-```{r crime_rates, results='asis', echo=FALSE}
-source('R/basic_breakdowns.R')
-knitr::kable(format(table_data,big.mark=',', digits=2 ), 
-             align='r', 
-             caption='Crime rate in Chicago and Los Angeles, 2013')
-```
+
+Table: Crime rate in Chicago and Los Angeles, 2013
+
+               personal   property    total
+------------  ---------  ---------  -------
+Chicago           4,169      5,834   11,248
+Los Angeles       2,558      3,356    6,105
 
 Chicago has significantly higher crime rate in 2013 than Los Angeles. Difference is especially high for personal crimes: Chicago's rate of personal crimes is around 60% higher than Los Angeles'.
 
 Let's look at the time when crimes are happening. Hourly patterns by crime type and city are plotted below.
 
-```{r hour_breakdowns, echo=FALSE, fig.cap='Share of crime reports by hour'}
-source('R/breakdown_by_hour.R')
-```
+![Share of crime reports by hour](report_files/figure-html/hour_breakdowns-1.png) 
 
 Some patterns are the same across the cities and crime types. For example, time when crime reports are reported the least is during early morning hours between 4 and 6 AM. It is surprizing to see that crime reports tend to be reported more at odd hours, as we see from jagged lines in all the facets.
 
@@ -107,9 +85,7 @@ Crime in Chicago and Los Angeles are different in several ways. As we saw in tab
 
 Let's look at weekday patterns.
 
-```{r weekday_breakdowns, echo=FALSE, fig.cap='Share of crime reports by weekday'}
-source('R/breakdown_by_weekday.R')
-```
+![Share of crime reports by weekday](report_files/figure-html/weekday_breakdowns-1.png) 
 
 Here we see slightly different crime patterns between two cities. Most crimes in Chicago are reported at the begininng of the week, while in Los Angeles they tend to be happening in the middle of the week.
 
@@ -118,9 +94,7 @@ Univariate plots.
 
 Let's look at distribution of our crime rate variables and demographic variables. Outliers were omitted in plots in this section. 
 
-```{r bivariate_plots, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Distribution of crime rate in census block groups'}
-source('R/uni_bivariate.R')
-```
+![Distribution of crime rate in census block groups](report_files/figure-html/bivariate_plots-1.png) 
 
 We see several interesting patterns from these histograms. First, all have long tails, they are not normally distributed. Histogram for all crime types have somewhat thicker tail, which is ovbious since personal and property crimes are included in that figure.
 
@@ -128,14 +102,7 @@ Personal and property crimes have maximums at different levels. Histogram of pro
 
 Let's see at histograms of our demographic variables.
 
-```{r histograms, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=10, fig.cap='Distribution of demographic variables in census block groups'}
-
-multiplot(dens_hist,
-          income_hist,
-          edu_hist,
-          unemployment_hist, 
-          layout=matrix(c(1,2,3,4), nrow=2, byrow=TRUE))
-```
+![Distribution of demographic variables in census block groups](report_files/figure-html/histograms-1.png) 
 
 Three of our demographc variables have similar distributions: quick spike at the beginning of x axis, and then slowly decreasing. Education level is different though: it increases steadily, with a sharp drop very close to a 100% mark.
 
@@ -144,9 +111,7 @@ Bivariate plots.
 
 Scatteplots of number of various types of crime and demograpfic parameters by block group are plotted below. As in previosu section, outliers were removed from this plot.
 
-``````{r crime_rate_vs_demo, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Crime rate and demographic variables'}
-source('R/facet_scatterplot.R')
-```
+![Crime rate and demographic variables](report_files/figure-html/crime_rate_vs_demo-1.png) 
 
 We can see from scatterplots above that all our demographic variables appear to correlate with crime levels. It is also interesting to note that relation between density and median income from one side and crime levels on another side looks non-linear.
 
@@ -155,23 +120,33 @@ Spatial plots of crime data
 
 Let's put crime reports to map of each city.
 
-```{r crime_heatmaps, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=9, fig.cap='Property and personal crimes in Chicago and Los Angeles'}
-source('R/heatmaps.R')
-```
+![Property and personal crimes in Chicago and Los Angeles](report_files/figure-html/crime_heatmaps-1.png) 
 
 Both personal and property crimes in Los Angeles are concentrated in a single area around Skid Row and Downton Los Angeles. In Chicago though different types of crime are concentrated in completely different areas. Property crimes are clustered around Chicago city center: Near North Side, Chicago Loop and River North. Personal crimes are concentrated heavily around western areas of Chicago: North and South Lawndale, Near West Side.
 
 Let's plot our demographic variables on a city map, to find visual clues about connection between demography and crime level. This is map of Los Angeles with four demographic variables on it:
 
-``````{r demo_map_la, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Demography maps of Los Angeles'}
-source('R/correlation_maps_la.R')
+
 ```
+## OGR data source with driver: ESRI Shapefile 
+## Source: "raw/tl_2013_06_bg", layer: "tl_2013_06_bg"
+## with 23212 features
+## It has 12 fields
+```
+
+![Demography maps of Los Angeles](report_files/figure-html/demo_map_la-1.png) 
 
 Same variables for Chicago look like this: 
 
-``````{r demo_map_ch, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=8, fig.cap='Demography maps of Chicago'}
-source('R/correlation_maps_ch.R')
+
 ```
+## OGR data source with driver: ESRI Shapefile 
+## Source: "raw/tl_2013_17_bg/", layer: "tl_2013_17_bg"
+## with 9691 features
+## It has 12 fields
+```
+
+![Demography maps of Chicago](report_files/figure-html/demo_map_ch-1.png) 
 
 Plots above suggest that there is indeed some correlation between demographic variables and crime levels. Correlation look especially clear for education levels and median income. In addition to that, crime in Chicago appears to be concentrated in areas with higher unemployment. while for Los Angeles same can be said about areas with high population density.
 
@@ -182,28 +157,40 @@ Correlation coefficients
 
 Let's find quantifiable parameters to visual clues described in sections above and look at correlation matrix: how crime rate in census block groups correlate with our four demographic parameters.
 
-````{r corr_table_overall, echo=FALSE}
-source('R/correlation_matricies.R')
 
-knitr::kable(format(mtrx,big.mark=',', digits=2 ), 
-             align='r', 
-             caption='Correlations between crime rate and demography, entire dataset')
-```
+Table: Correlations between crime rate and demography, entire dataset
+
+                                    Total crimes   Property crimes   Personal crimes
+---------------------------------  -------------  ----------------  ----------------
+Population density                       -0.0463           -0.0340           -0.0622
+Median Income                            -0.0363           -0.0085           -0.0821
+% of unemployed                           0.1532            0.1195            0.1970
+% of high school diploma or more          0.0182            0.0270           -0.0017
 
 Perhaps a bit surprizingly for us, correlation coefficients are very low. Unemployment level correlates somewhot more significant with all crime types than other demographic variables, however even here they don't exceed 20%. Other correlation coefficients sow even weaker, with numbers around single digit percent they suggest that correlation on overall dataset is almost non-existent.
 
 However it makes sense to have a look at each individual city to see if things are different.
 
-````{r corr_tables_cities, echo=FALSE}
-# we sourced R/correlation_matricies.R in previous chunk
 
-knitr::kable(format(mtrx_la,big.mark=',', digits=2), 
-             align='r', 
-             caption='Correlations between crime rate and demography, Los Angeles')
-knitr::kable(format(mtrx_ch,big.mark=',', digits=2), 
-             align='r',
-             caption='Correlations between crime rate and demography, Chicago')
-```
+Table: Correlations between crime rate and demography, Los Angeles
+
+                                    Total crimes   Property crimes   Personal crimes
+---------------------------------  -------------  ----------------  ----------------
+Population density                       -0.0301           -0.0283           -0.0324
+Median Income                            -0.0029           -0.0018           -0.0055
+% of unemployed                           0.1753            0.1751            0.1756
+% of high school diploma or more          0.0218            0.0240            0.0175
+
+
+
+Table: Correlations between crime rate and demography, Chicago
+
+                                    Total crimes   Property crimes   Personal crimes
+---------------------------------  -------------  ----------------  ----------------
+Population density                       -0.1845           -0.1799           -0.1707
+Median Income                            -0.1544           -0.0337           -0.2447
+% of unemployed                           0.2738            0.1941            0.3099
+% of high school diploma or more         -0.0589            0.0029           -0.1106
 
 There are no coefficients higher than 35% on city level as well. In Chicago we see that rate of personal crimes correlate with demographic variables stronger than in Los Angeles, especially the unemployment rate. Also population density correlates somewhat closer with all crime types in Chicago. However even here such numbers do not show us a significant correlation bewteen crime and demographic variables.
 
@@ -212,27 +199,15 @@ Final plots and summary
 
 My research produced mixed results. While correlation patters in both cities differ from each other, I could not find a significant correlation between any of demographic varaible used in this research and crime rate of any type.
 
-```{r corr_matrices_ch, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Correlation between crime and demografic parameters, Chicago'}
-# plot from R/correlation_matricies.R sourced above
-
-print(ch_correlations)
-```
+![Correlation between crime and demografic parameters, Chicago](report_files/figure-html/corr_matrices_ch-1.png) 
 
 Crime in Chicago shows visible level of correlation with unemployment level, density and median income. It is interesting, that personal crimes correlate with these demographical variables more than property crimes.
 
-```{r corr_matrices_la, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Correlation between crime and demografic parameters, Los Angeles'}
-# plot from R/correlation_matricies.R sourced above
-
-print(la_correlations)
-```
+![Correlation between crime and demografic parameters, Los Angeles](report_files/figure-html/corr_matrices_la-1.png) 
 
 As it was mentioned before, correlation patterns in Los Angeles are vastly different from Chicago. Overall correlation coefficients between crime rate and demographic variables are very close to zero. Of all four demographics only unemployment correlates with crimes of both types at more or less visible level (above 15%). Three other demographic variables have correlation coefficients in range 0--5%.
 
-```{r corr_matrices_total, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='Correlation between crime and demografic parameters, both cities'}
-# plot from R/correlation_matricies.R sourced above
-
-print(total_correlations)
-```
+![Correlation between crime and demografic parameters, both cities](report_files/figure-html/corr_matrices_total-1.png) 
 
 Correlation coefficients on all dataset don't give us drastically different picture. Correlation between unemployment and crime rate stands out from other demographic parameters, however it is still way below generally accepted level of 70+%. We also see that personal crimes correlate more with demographic variables. With such low correlation coefficients however this is meaningless, we cannot draw any conclusions based on that.
 

@@ -4,6 +4,7 @@
 .RData
 .Rproj.user
 *.Rproj
+report_files/
 
 .DS_Store
 raw/
